@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกรายงานผลการแข่งขันกีฬา - วิทยาลัยเทคนิคสัตหีบ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #1e7e34);
+        }
+
+        .match-list {
+            margin-top: 30px;
+        }
+
+        .match-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .match-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .match-sport {
+            background: #007bff;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .match-date {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .match-teams {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 15px 0;
+        }
+
+        .score {
+            background: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin: 0 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #b3d9ff;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .nav-tab {
+                min-width: 120px;
+            }
+            
+            .match-teams {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .score {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 ระบบบันทึกรายงานผลการแข่งขันกีฬา</h1>
+            <p>วิทยาลัยเทคนิคสัตหีบ ประจำปีการศึกษา 2568</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('record')">บันทึกผลการแข่งขัน</button>
+            <button class="nav-tab" onclick="showTab('results')">ดูผลการแข่งขัน</button>
+            <button class="nav-tab" onclick="showTab('stats')">สถิติ</button>
+            <button class="nav-tab" onclick="showTab('reports')">รายงาน</button>
+        </div>
+
+        <!-- Tab: บันทึกผลการแข่งขัน -->
+        <div id="record" class="tab-content active">
+            <h2>📝 บันทึกผลการแข่งขันใหม่</h2>
+            
+            <form id="matchForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="matchDate">วันที่แข่งขัน</label>
+                        <input type="date" id="matchDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="matchTime">เวลา</label>
+                        <input type="time" id="matchTime" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sportType">ประเภทกีฬา</label>
+                        <select id="sportType" required>
+                            <option value="">-- เลือกประเภทกีฬา --</option>
+                            <option value="ฟุตบอล">⚽ ฟุตบอล</option>
+                            <option value="ฟุตซอล">🏈 ฟุตซอล</option>
+                            <option value="วอลเลย์บอล">🏐 วอลเลย์บอล</option>
+                            <option value="บาสเกตบอล">🏀 บาสเกตบอล</option>
+                            <option value="เซปักตะกร้อ">🥎 เซปักตะกร้อ</option>
+                            <option value="เปตอง">🎱 เปตอง</option>
+                            <option value="E-Sport">🎮 E-Sport</option>
+                            <option value="หมากฮอส">♟️ หมากฮอส</option>
+                            <option value="หมากกรุก">♛ หมากกรุก</option>
+                            <option value="หมากล้อม">⚫ หมากล้อม</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="matchRound">รอบการแข่งขัน</label>
+                        <select id="matchRound" required>
+                            <option value="">-- เลือกรอบ --</option>
+                            <option value="คัดเลือก">คัดเลือก</option>
+                            <option value="รอบแรก">รอบแรก</option>
+                            <option value="รอบสอง">รอบสอง</option>
+                            <option value="รอบชิงชนะเลิศ">รอบชิงชนะเลิศ</option>
+                            <option value="รอบชิงอันดับ 3">รอบชิงอันดับ 3</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="team1">ทีมที่ 1 / ผู้เล่นคนที่ 1</label>
+                        <input type="text" id="team1" placeholder="ระบุชื่อทีมหรือชื่อผู้เล่น" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="team2">ทีมที่ 2 / ผู้เล่นคนที่ 2</label>
+                        <input type="text" id="team2" placeholder="ระบุชื่อทีมหรือชื่อผู้เล่น" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="score1">คะแนน ทีมที่ 1</label>
+                        <input type="number" id="score1" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="score2">คะแนน ทีมที่ 2</label>
+                        <input type="number" id="score2" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="venue">สนามแข่งขัน</label>
+                        <input type="text" id="venue" placeholder="ระบุสถานที่แข่งขัน" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="referee">กรรมการผู้ตัดสิน</label>
+                        <input type="text" id="referee" placeholder="ชื่อกรรมการ">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="notes">หมายเหตุ / รายละเอียดเพิ่มเติม</label>
+                        <textarea id="notes" placeholder="บันทึกข้อมูลเพิ่มเติม เช่น จุดเด่น จุดที่ควรปรับปรุง หรือเหตุการณ์สำคัญในการแข่งขัน"></textarea>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">💾 บันทึกผลการแข่งขัน</button>
+                <button type="reset" class="btn btn-secondary">🔄 ล้างข้อมูล</button>
+            </form>
+        </div>
+
+        <!-- Tab: ดูผลการแข่งขัน -->
+        <div id="results" class="tab-content">
+            <h2>🏅 ผลการแข่งขันทั้งหมด</h2>
+            
+            <div class="filter-bar">
+                <input type="text" class="search-box" id="searchBox" placeholder="🔍 ค้นหาชื่อทีม หรือประเภทกีฬา">
+                <select id="sportFilter">
+                    <option value="">กีฬาทั้งหมด</option>
+                    <option value="ฟุตบอล">⚽ ฟุตบอล</option>
+                    <option value="ฟุตซอล">🏈 ฟุตซอล</option>
+                    <option value="วอลเลย์บอล">🏐 วอลเลย์บอล</option>
+                    <option value="บาสเกตบอล">🏀 บาสเกตบอล</option>
+                    <option value="เซปักตะกร้อ">🥎 เซปักตะกร้อ</option>
+                    <option value="เปตอง">🎱 เปตอง</option>
+                    <option value="E-Sport">🎮 E-Sport</option>
+                    <option value="หมากฮอส">♟️ หมากฮอส</option>
+                    <option value="หมากกรุก">♛ หมากกรุก</option>
+                    <option value="หมากล้อม">⚫ หมากล้อม</option>
+                </select>
+                <select id="roundFilter">
+                    <option value="">รอบทั้งหมด</option>
+                    <option value="คัดเลือก">คัดเลือก</option>
+                    <option value="รอบแรก">รอบแรก</option>
+                    <option value="รอบสอง">รอบสอง</option>
+                    <option value="รอบชิงชนะเลิศ">รอบชิงชนะเลิศ</option>
+                    <option value="รอบชิงอันดับ 3">รอบชิงอันดับ 3</option>
+                </select>
+            </div>
+
+            <div id="matchList" class="match-list">
+                <div class="alert alert-info">
+                    ยังไม่มีการบันทึกผลการแข่งขัน กรุณาเพิ่มข้อมูลในแท็บ "บันทึกผลการแข่งขัน"
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: สถิติ -->
+        <div id="stats" class="tab-content">
+            <h2>📊 สถิติการแข่งขัน</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMatches">0</div>
+                    <div class="stat-label">การแข่งขันทั้งหมด</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSports">10</div>
+                    <div class="stat-label">ประเภทกีฬา</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTeams">0</div>
+                    <div class="stat-label">ทีม/ผู้เล่น</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-number" id="completedMatches">0</div>
+                    <div class="stat-label">แข่งขันเสร็จสิ้น</div>
+                </div>
+            </div>
+
+            <div id="sportsStats">
+                <h3>📈 สถิติตามประเภทกีฬา</h3>
+                <div id="sportStatsContainer">
+                    <div class="alert alert-info">
+                        ยังไม่มีข้อมูลสถิติ กรุณาบันทึกผลการแข่งขันก่อน
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: รายงาน -->
+        <div id="reports" class="tab-content">
+            <h2>📋 สร้างรายงาน</h2>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="reportType">ประเภทรายงาน</label>
+                    <select id="reportType">
+                        <option value="all">รายงานทั้งหมด</option>
+                        <option value="sport">รายงานตามประเภทกีฬา</option>
+                        <option value="round">รายงานตามรอบการแข่งขัน</option>
+                        <option value="date">รายงานตามช่วงเวลา</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reportFormat">รูปแบบรายงาน</label>
+                    <select id="reportFormat">
+                        <option value="summary">สรุปผลการแข่งขัน</option>
+                        <option value="detailed">รายละเอียดทั้งหมด</option>
+                        <option value="statistics">สถิติและกราฟ</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button class="btn btn-success" onclick="generateReport()">📊 สร้างรายงาน</button>
+            <button class="btn" onclick="exportData()">💾 ส่งออกข้อมูล</button>
+            
+            <div id="reportOutput" style="margin-top: 30px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลเก็บในหน่วยความจำ
+        let matches = [];
+        let currentEditId = null;
+
+        // เริ่มต้นระบบ
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleData();
+            setupEventListeners();
+            updateStats();
+        });
+
+        // ตัวอย่างข้อมูล
+        function loadSampleData() {
+            matches = [
+                {
+                    id: 1,
+                    date: '2024-09-15',
+                    time: '14:00',
+                    sport: 'ฟุตบอล',
+                    round: 'รอบแรก',
+                    team1: 'ทีมสาขาเครื่องกล',
+                    team2: 'ทีมสาขาไฟฟ้า',
+                    score1: 2,
+                    score2: 1,
+                    venue: 'สนามฟุตบอลวิทยาลัย',
+                    referee: 'อาจารย์สมชาย ใจดี',
+                    notes: 'การแข่งขันที่น่าตื่นเต้น ทีมเครื่องกลชนะในช่วงท้าย'
+                },
+                {
+                    id: 2,
+                    date: '2024-09-16',
+                    time: '10:00',
+                    sport: 'บาสเกตบอล',
+                    round: 'คัดเลือก',
+                    team1: 'ทีมสาขาคอมพิวเตอร์',
+                    team2: 'ทีมสาขาอิเล็กทรอนิกส์',
+                    score1: 68,
+                    score2: 72,
+                    venue: 'โรงยิมวิทยาลัย',
+                    referee: 'อาจารย์วิชัย กีฬาดี',
+                    notes: 'เกมสูสีตลอด 4 ควอร์เตอร์'
+                }
+            ];
+            updateMatchList();
+            updateStats();
+        }
+
+        // ตั้งค่า Event Listeners
+        function setupEventListeners() {
+            document.getElementById('matchForm').addEventListener('submit', handleSubmit);
+            document.getElementById('searchBox').addEventListener('input', filterMatches);
+            document.getElementById('sportFilter').addEventListener('change', filterMatches);
+            document.getElementById('roundFilter').addEventListener('change', filterMatches);
+        }
+
+        // จัดการการส่งฟอร์ม
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            const formData = {
+                id: currentEditId || Date.now(),
+                date: document.getElementById('matchDate').value,
+                time: document.getElementById('matchTime').value,
+                sport: document.getElementById('sportType').value,
+                round: document.getElementById('matchRound').value,
+                team1: document.getElementById('team1').value,
+                team2: document.getElementById('team2').value,
+                score1: parseInt(document.getElementById('score1').value),
+                score2: parseInt(document.getElementById('score2').value),
+                venue: document.getElementById('venue').value,
+                referee: document.getElementById('referee').value,
+                notes: document.getElementById('notes').value
+            };
+
+            if (currentEditId) {
+                // แก้ไขข้อมูล
+                const index = matches.findIndex(m => m.id === currentEditId);
+                matches[index] = formData;
+                currentEditId = null;
+                showAlert('แก้ไขข้อมูลเรียบร้อยแล้ว!', 'success');
+            } else {
+                // เพิ่มข้อมูลใหม่
+                matches.push(formData);
+                showAlert('บันทึกผลการแข่งขันเรียบร้อยแล้ว!', 'success');
+            }
+
+            document.getElementById('matchForm').reset();
+            updateMatchList();
+            updateStats();
+        }
+
+        // อัพเดตรายการแมตช์
+        function updateMatchList() {
+            const matchList = document.getElementById('matchList');
+            
+            if (matches.length === 0) {
+                matchList.innerHTML = '<div class="alert alert-info">ยังไม่มีการบันทึกผลการแข่งขัน กรุณาเพิ่มข้อมูลในแท็บ "บันทึกผลการแข่งขัน"</div>';
+                return;
+            }
+
+            matchList.innerHTML = matches.map(match => {
+                const winner = match.score1 > match.score2 ? match.team1 : 
+                              match.score1 < match.score2 ? match.team2 : 'เสมอ';
+                
+                return `
+                    <div class="match-card">
+                        <div class="match-header" style="justify-content: space-between;">
+                            <div>
+                                <span class="match-sport">${match.sport}</span>
+                                <span class="match-date" style="margin-left: 15px;">
+                                    📅 ${formatDate(match.date)} ⏰ ${match.time}
+                                </span>
+                            </div>
+                            <div>
+                                <button class="btn" onclick="editMatch(${match.id})" style="padding: 5px 10px; margin-right: 5px;">✏️ แก้ไข</button>
+                                <button class="btn btn-danger" onclick="deleteMatch(${match.id})" style="padding: 5px 10px;">🗑️ ลบ</button>
+                            </div>
+                        </div>
+                        
+                        <div class="match-teams">
+                            <span>${match.team1}</span>
+                            <div class="score">${match.score1} - ${match.score2}</div>
+                            <span>${match.team2}</span>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 10px 0;">
+                            <strong>🏆 ผู้ชนะ: ${winner}</strong> | 
+                            🏟️ ${match.venue} | 
+                            👨‍⚖️ ${match.referee || 'ไม่ระบุ'}
+                        </div>
+                        
+                        ${match.notes ? `<div style="background: #fff3cd; padding: 10px; border-radius: 5px; border-left: 4px solid #ffc107;"><strong>หมายเหตุ:</strong> ${match.notes}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // แก้ไขแมตช์
+        function editMatch(id) {
+            const match = matches.find(m => m.id === id);
+            if (!match) return;
+
+            // เปลี่ยนไปแท็บบันทึกและกรอกข้อมูล
+            showTab('record');
+            currentEditId = id;
+            
+            document.getElementById('matchDate').value = match.date;
+            document.getElementById('matchTime').value = match.time;
+            document.getElementById('sportType').value = match.sport;
+            document.getElementById('matchRound').value = match.round;
+            document.getElementById('team1').value = match.team1;
+            document.getElementById('team2').value = match.team2;
+            document.getElementById('score1').value = match.score1;
+            document.getElementById('score2').value = match.score2;
+            document.getElementById('venue').value = match.venue;
+            document.getElementById('referee').value = match.referee;
+            document.getElementById('notes').value = match.notes;
+            
+            showAlert('กรุณาแก้ไขข้อมูลและคลิก "บันทึกผลการแข่งขัน"', 'info');
+        }
+
+        // ลบแมตช์
+        function deleteMatch(id) {
+            if (confirm('คุณต้องการลบข้อมูลการแข่งขันนี้หรือไม่?')) {
+                matches = matches.filter(m => m.id !== id);
+                updateMatchList();
+                updateStats();
+                showAlert('ลบข้อมูลเรียบร้อยแล้ว!', 'success');
+            }
+        }
+
+        // กรองแมตช์
+        function filterMatches() {
+            const search = document.getElementById('searchBox').value.toLowerCase();
+            const sportFilter = document.getElementById('sportFilter').value;
+            const roundFilter = document.getElementById('roundFilter').value;
+            
+            let filtered = matches.filter(match => {
+                const matchText = `${match.team1} ${match.team2} ${match.sport} ${match.venue}`.toLowerCase();
+                const matchesSearch = search === '' || matchText.includes(search);
+                const matchesSport = sportFilter === '' || match.sport === sportFilter;
+                const matchesRound = roundFilter === '' || match.round === roundFilter;
+                
+                return matchesSearch && matchesSport && matchesRound;
+            });
+            
+            // อัพเดตรายการแมตช์ที่กรองแล้ว
+            const originalMatches = matches;
+            matches = filtered;
+            updateMatchList();
+            matches = originalMatches;
+        }
+
+        // อัพเดตสถิติ
+        function updateStats() {
+            const totalMatches = matches.length;
+            const uniqueTeams = new Set();
+            const sportStats = {};
+            
+            matches.forEach(match => {
+                uniqueTeams.add(match.team1);
+                uniqueTeams.add(match.team2);
+                
+                if (!sportStats[match.sport]) {
+                    sportStats[match.sport] = 0;
+                }
+                sportStats[match.sport]++;
+            });
+            
+            document.getElementById('totalMatches').textContent = totalMatches;
+            document.getElementById('totalTeams').textContent = uniqueTeams.size;
+            document.getElementById('completedMatches').textContent = totalMatches;
+            
+            // สถิติกีฬา
+            const sportStatsContainer = document.getElementById('sportStatsContainer');
+            if (Object.keys(sportStats).length > 0) {
+                sportStatsContainer.innerHTML = Object.entries(sportStats)
+                    .map(([sport, count]) => `
+                        <div class="stat-card">
+                            <div class="stat-number">${count}</div>
+                            <div class="stat-label">${sport}</div>
+                        </div>
+                    `).join('');
+            } else {
+                sportStatsContainer.innerHTML = '<div class="alert alert-info">ยังไม่มีข้อมูลสถิติ กรุณาบันทึกผลการแข่งขันก่อน</div>';
+            }
+        }
+
+        // สลับแท็บ
+        function showTab(tabName) {
+            // ซ่อนแท็บทั้งหมด
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // ยกเลิกการเลือกปุ่มทั้งหมด
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // แสดงแท็บที่เลือก
+            document.getElementById(tabName).classList.add('active');
+            
+            // เลือกปุ่มที่เกี่ยวข้อง
+            event.target.classList.add('active');
+        }
+
+        // ฟอร์แมตวันที่
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'long'
+            };
+            return date.toLocaleDateString('th-TH', options);
+        }
+
+        // แสดงการแจ้งเตือน
+        function showAlert(message, type) {
+            // สร้าง element การแจ้งเตือน
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                min-width: 300px;
+                animation: slideIn 0.3s ease-out;
+            `;
+            alert.innerHTML = `
+                <strong>${type === 'success' ? '✅' : type === 'info' ? 'ℹ️' : '⚠️'}</strong>
+                ${message}
+                <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; font-size: 18px; cursor: pointer; color: inherit;">×</button>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            // ลบการแจ้งเตือนอัตโนมัติหลัง 5 วินาที
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // สร้างรายงาน
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const reportFormat = document.getElementById('reportFormat').value;
+            const reportOutput = document.getElementById('reportOutput');
+            
+            let reportContent = '';
+            
+            if (matches.length === 0) {
+                reportContent = '<div class="alert alert-info">ไม่มีข้อมูลสำหรับสร้างรายงาน</div>';
+            } else {
+                reportContent = `
+                    <div class="match-card">
+                        <h3>📋 รายงานการแข่งขันกีฬา - วิทยาลัยเทคนิคสัตหีบ</h3>
+                        <p><strong>ประจำปีการศึกษา 2568</strong></p>
+                        <p>สร้างเมื่อ: ${new Date().toLocaleString('th-TH')}</p>
+                        
+                        <h4>📊 สรุปภาพรวม</h4>
+                        <ul>
+                            <li>จำนวนการแข่งขันทั้งหมด: ${matches.length} การแข่งขัน</li>
+                            <li>จำนวนทีม/ผู้เล่นที่เข้าร่วม: ${new Set([...matches.map(m => m.team1), ...matches.map(m => m.team2)]).size} ทีม</li>
+                            <li>ประเภทกีฬาที่จัดแข่งขัน: ${new Set(matches.map(m => m.sport)).size} ประเภท</li>
+                        </ul>
+                        
+                        <h4>🏆 ผลการแข่งขันล่าสุด</h4>
+                        <div style="max-height: 400px; overflow-y: auto;">
+                `;
+                
+                matches.slice(-10).reverse().forEach(match => {
+                    const winner = match.score1 > match.score2 ? match.team1 : 
+                                  match.score1 < match.score2 ? match.team2 : 'เสมอ';
+                    
+                    reportContent += `
+                        <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                            <strong>${match.sport}</strong> | ${formatDate(match.date)}<br>
+                            ${match.team1} <strong>${match.score1} - ${match.score2}</strong> ${match.team2}<br>
+                            <small>🏆 ผู้ชนะ: ${winner} | 🏟️ ${match.venue}</small>
+                        </div>
+                    `;
+                });
+                
+                reportContent += '</div></div>';
+            }
+            
+            reportOutput.innerHTML = reportContent;
+            showAlert('สร้างรายงานเรียบร้อยแล้ว!', 'success');
+        }
+
+        // ส่งออกข้อมูล
+        function exportData() {
+            if (matches.length === 0) {
+                showAlert('ไม่มีข้อมูลสำหรับส่งออก', 'info');
+                return;
+            }
+            
+            // สร้างข้อมูล CSV
+            const headers = ['วันที่', 'เวลา', 'กีฬา', 'รอบ', 'ทีม 1', 'ทีม 2', 'คะแนน 1', 'คะแนน 2', 'สนาม', 'กรรมการ', 'หมายเหตุ'];
+            const csvContent = [
+                headers.join(','),
+                ...matches.map(match => [
+                    match.date,
+                    match.time,
+                    match.sport,
+                    match.round,
+                    `"${match.team1}"`,
+                    `"${match.team2}"`,
+                    match.score1,
+                    match.score2,
+                    `"${match.venue}"`,
+                    `"${match.referee || ''}"`,
+                    `"${match.notes || ''}"`
+                ].join(','))
+            ].join('\n');
+            
+            // สร้างและดาวน์โลดไฟล์
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `รายงานการแข่งขันกีฬา_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showAlert('ส่งออกข้อมูลเรียบร้อยแล้ว!', 'success');
+        }
+
+        // เพิ่ม CSS Animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            .match-card {
+                animation: fadeIn 0.3s ease-out;
+            }
+            
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
